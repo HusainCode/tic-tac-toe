@@ -4,42 +4,52 @@
 import pygame as pg
 
 
-# font_path = "fonts/Chalktastic.ttf"
+#
 # self.font = pg.font.Font(font_path, 36)
 
 class GUI:
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
     LINE_COLOR = (245, 245, 245)
     LINE_WIDTH = 12
     BACKGROUND_IMAGE = "image/background.jpg"
 
-    def __init__(self, initial_window_width=800, initial_window_height=600):
+    def __init__(self):
         pg.init()  # Initialize pygame
-        self.screen_width = initial_window_width  # Screen width
-        self.screen_height = initial_window_height  # Screen height
-        self.screen = pg.display.set_mode((initial_window_width, initial_window_height))  # Create the screen
+        self.screen_width = GUI.WINDOW_WIDTH  # Screen width
+        self.screen_height = GUI.WINDOW_HEIGHT  # Screen height
+
+        self.font_path = "../assets/chalktastic/license.txt"  # Path to the font file
+        self.font = pg.font.Font(self.font_path, 36)  # Create a font object
+
+        self.screen = pg.display.set_mode((GUI.WINDOW_WIDTH, GUI.WINDOW_HEIGHT))  # Create the screen
+
         pg.display.set_caption("Tic Tac Toe")  # Set the window title
         self.background = pg.image.load(self.BACKGROUND_IMAGE).convert()  # Convert for faster blitting
+
         self.clock = pg.time.Clock()  # Create a clock to control the frame rate
         self.running = True  # Flag to control the game loop
+
         self.background = pg.transform.scale(self.background, (
-            initial_window_width, initial_window_height))  # Scale the background image to fit the screen
+            GUI.WINDOW_WIDTH, GUI.WINDOW_HEIGHT))  # Scale the background image to fit the screen
+        self.board = [[None for _ in range(3)] for _ in range(3)]  # 3x3 board
 
     # draw the grid lines
     def draw_grid(self):
+        # Draw the vertical grid lines
         for x in range(1, 3):
-            # Vertical lines
             pg.draw.line(
                 self.screen, self.LINE_COLOR,
-                (self.screen_width // 3 * x, 0),
-                (self.screen_width // 3 * x, self.screen_height),
+                (self.screen_width // 3 * x, 0),  # start point of the line
+                (self.screen_width // 3 * x, self.screen_height),  # end point of the line
                 self.LINE_WIDTH
             )
 
-            # Horizontal lines
+            # Draw the horizontal lines
             pg.draw.line(
                 self.screen, self.LINE_COLOR,
-                (0, self.screen_height // 3 * x),
-                (self.screen_width, self.screen_height // 3 * x),
+                (0, self.screen_height // 3 * x),  # start point of the line
+                (self.screen_width, self.screen_height // 3 * x),  # end point of the line
                 self.LINE_WIDTH
             )
 
@@ -70,19 +80,29 @@ class GUI:
     def update_content(self):
         pg.display.update()
 
+    # Display the pre-game menu options before starting the game
+
+    def handle_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                return False
+        return True
+
     def run(self):
+        running = True  # Flag to control the game loop
 
-        while True:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    running = False
+        # Game loop to keep the game running
+        while running:
+            running = self.handle_events()
 
+            # Clear the screen and draw the background
             self.screen.blit(self.background, (0, 0))
+            # Draw the grid lines
             self.draw_grid()
             pg.display.flip()
             self.clock.tick(60)
 
-        pg.quit()
+        pg.quit()  # Quit pygame when pressing the close button
 
 
 GUI().run()

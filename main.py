@@ -3,9 +3,8 @@
 # Date:
 
 
-import pygame as pg
-import sys
-from gui import GUI
+from gui.gui import GUI
+from data.data import Data
 
 
 # This is the main function that runs the game when the file is executed
