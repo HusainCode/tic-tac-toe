@@ -1,66 +1,90 @@
-# This file contains
-# the PreGameMenu class which is responsible for creating the pre-game menu
+# This class handles the pre game menu before starting the game.
+# It displays the name of the game and allows the user to choose
+# between playing against a friend or AI.
+
 
 import pygame as pg
+import os
 
 
 class PreGameMenu:
-    WINDOW_WIDTH = 400
-    WINDOW_HEIGHT = 300
-    BUTTON_WIDTH = 50
-    BUTTON_HEIGHT = 50
-    BUTTON_COLOR = (192, 192, 192)
-    BUTTON_HIGHLIGHT = (255, 255, 255)
-    BUTTON_SHADOW = (128, 128, 128)
-    TEXT_COLOR = (0, 0, 0)
+    WINDOW_WIDTH = 400  # Window/screen width
+    WINDOW_HEIGHT = 300  # Window/screen height
+
+    TEXT_COLOR = (255, 155, 55)  # Text color
+    TEXT_SIZE = 40
+    TEXT_WIDTH = 100  # Text width
+    TEXT_HEIGHT = 260  # Text height
+
+    GAME_SPEED = 60  # Value for clock()
 
     def __init__(self):
-        pg.init()
+        pg.init()  # Initializes Pygame modules
+        self.running = True  # Flag to keep the game running
+
+        self.setup_screen()
+        self.load_assets()
+        self.setup_game_elements()
+        self.play_music()
+
+    # Set up the game screen and caption.
+    def setup_screen(self):
         self.screen = pg.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
-        pg.display.set_caption('Pre-Game Menu')
-        self.font = pg.font.SysFont('Arial', 20)
-        self.running = True
+        pg.display.set_caption('Pre Game Menu')
+
+    # Load all necessary assets like fonts
+    def load_assets(self):
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        self.font_path = os.path.join(base_dir, "assets", "font", "game_over_cre", "gameovercre1.ttf")
+
+        if not os.path.exists(self.font_path):
+            raise FileNotFoundError(f"No file '{self.font_path}' found")
+        print(f"Using font path: {self.font_path}")
+
+        self.font = pg.font.Font(self.font_path, self.TEXT_SIZE)
+
+    # Initialize game elements like text and buttons
+    def setup_game_elements(self):
         self.clock = pg.time.Clock()
-        self.buttons = [("Play against AI", (100, 200, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)),
-                        ("Play against a friend", (10, 260, self.BUTTON_WIDTH, self.BUTTON_HEIGHT))]
+        self.game_speed = self.GAME_SPEED
+        self.buttons = [
+            ("Play VS AI", (100, 200, self.TEXT_WIDTH, self.TEXT_HEIGHT)),
+            ("Play VS Friend", (self.TEXT_WIDTH, self.TEXT_HEIGHT))
+        ]
 
-    def draw_buttons(self, text, rect):
-        x, y, width, height = rect
-        pg.draw.rect(self.screen, self.BUTTON_COLOR, rect)
-        pg.draw.line(self.screen, self.BUTTON_HIGHLIGHT, (x, y), (x + width, y), 2)
-        pg.draw.line(self.screen, self.BUTTON_HIGHLIGHT, (x, y), (x, y + height), 2)
-        pg.draw.line(self.screen, self.BUTTON_SHADOW, (x, y + height), (x + width, y + height), 2)
-        pg.draw.line(self.screen, self.BUTTON_SHADOW, (x + width, y), (x + width, y + height), 2)
+    def play_music(self):
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        music_path = os.path.join(base_dir, "assets", "music", "8-bit_bluesy_battle.ogg")
 
-        text_surface = self.font.render(text, True, self.TEXT_COLOR)
-        text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
-        self.screen.blit(text_surface, text_rect)
-
-    def pre_game_menu(self):
-        self.screen.fill((0, 0, 0))
-        for text, rect in self.buttons:
-            self.draw_buttons(text, rect)
-
-    def start_the_game(self):
-        pg.draw.line(self.screen)
+        if os.path.exists(music_path):
+            pg.mixer.music.load(music_path)
+            pg.mixer.music.play(-1)
+        else:
+            print(f"Music file '{music_path}' not found")
 
     def handle_event(self, events):
         for event in events:
             if event.type == pg.QUIT:
                 self.running = False
-            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_x, mouse_y = event.pos
-                for text, rect in self.buttons:
-                    if pg.Rect(rect).collidepoint(mouse_x, mouse_y):
-                        print(f"Button '{text}' pressed")
 
     def run(self):
+        hue = 0
         while self.running:
             self.handle_event(pg.event.get())
-            self.pre_game_menu()
-            self.clock.tick(60)
+            self.screen.fill((0, 0, 0))  # Clear the screen with black
+
+            hue = (hue + 5) % 360
+            color = pg.Color(0)
+            color.hsva = (hue, 100, 100, 100)
+
+            greet_text = self.font.render("Tic Tac Toe", True, color)
+            self.screen.blit(greet_text, (75, 100))  # Draw the text surface
+
             pg.display.flip()
+            self.clock.tick(self.game_speed)  # 60
+
         pg.quit()
 
 
-PreGameMenu().run()
+if __name__ == "__main__":
+    PreGameMenu().run()
