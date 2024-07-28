@@ -3,8 +3,6 @@
 
 import pygame as pg
 
-
-#
 # self.font = pg.font.Font(font_path, 36)
 
 class GUI:
@@ -12,7 +10,8 @@ class GUI:
     WINDOW_HEIGHT = 600
     LINE_COLOR = (245, 245, 245)
     LINE_WIDTH = 12
-    BACKGROUND_IMAGE = "image/background.jpg"
+    
+    GAME_SPEED = 60  # Value for clock() # IT SHOULD MATCH THE "pre_game_menu.py" GAME_SPEED
 
     def __init__(self):
         pg.init()  # Initialize pygame

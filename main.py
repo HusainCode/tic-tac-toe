@@ -4,7 +4,6 @@
 
 
 from gui.gui import GUI
-from data.present_data import Data
 
 
 # This is the main function that runs the game when the file is executed
